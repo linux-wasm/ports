@@ -6,12 +6,13 @@ and [musl](https://github.com/linux-wasm/musl), packed as one archive per
 package. [linux-wasm/distro](https://github.com/linux-wasm/distro) builds
 them and unpacks them into its base image.
 
-**Status: 13 packages, none of them patched.** Each is the upstream
+**Status: 14 packages, none of them patched.** Each is the upstream
 release configured for cross-compilation; what a recipe adds are answers
 to configure tests that would have to run a program.
 
 | Package | Version | Tested on the running system (distro's boot test) |
 |---|---|---|
+| busybox | 1.38.0 | init, `/bin/sh` (ash, which runs the boot scripts), mount, ps, vi and other small tools; configured by `packages/busybox/config` |
 | ncurses | 6.5 | `tput` finds the terminal description; nano and less use it |
 | bash | 5.3 | the login shell: job control, pipelines, subshells, `$(...)`, `<(...)`, arrays |
 | coreutils | 9.8 | `ls`, `sort`, `head`, `seq`, `cat`, `tr`, `wc`, ... throughout the test |

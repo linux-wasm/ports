@@ -27,7 +27,7 @@ CONTAINER="${CONTAINER:-docker}"
 IMAGE="${IMAGE:-${LINUX_WASM_IMAGE:-linux-wasm-build:llvm19}}"
 
 # Dependencies first.
-ALL="ncurses bash coreutils grep sed gawk findutils diffutils tar gzip make less nano"
+ALL="busybox ncurses bash coreutils grep sed gawk findutils diffutils tar gzip make less nano"
 
 clean=
 if [ "${1:-}" = --clean ]; then
