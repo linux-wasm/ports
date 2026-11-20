@@ -6,7 +6,7 @@ and [musl](https://github.com/linux-wasm/musl), packed as one archive per
 package. [linux-wasm/distro](https://github.com/linux-wasm/distro) builds
 them and unpacks them into its base image.
 
-**Status: 14 packages, none of them patched.** Each is the upstream
+**Status: 21 packages, none of them patched.** Each is the upstream
 release configured for cross-compilation; what a recipe adds are answers
 to configure tests that would have to run a program.
 
@@ -26,6 +26,13 @@ to configure tests that would have to run a program.
 | make | 4.4.1 | a Makefile with a function call |
 | less | 668 | `--version` only |
 | nano | 8.6 | type a line, write the file, quit |
+| zlib | 1.4 | a library only (its package is empty); linked into openssl, curl, openssh |
+| openssl | 3.5.9 | `openssl version`; the TLS in curl; by hand, `s_client` to a public site with a verified certificate |
+| ca-certificates | 2026.11.05 | Mozilla's list as extracted by the curl project; curl refuses a self-signed server because of it |
+| curl | 8.23.0 | HTTP by name, a 300 kB body intact, HTTPS with and without verification |
+| openssh | 10.6p2 | clients only: `ssh -V`, `ssh-keygen`; by hand, `ssh` to a real server up to "permission denied" (no account there) |
+| rsync | 3.5.2 | a local copy of a tree; not over ssh |
+| ldns | 1.9.2 | `drill`, the dig-like tool (dig itself is part of BIND) |
 
 No test suite of any package has been run.
 
@@ -58,7 +65,11 @@ The usual way is through distro, which passes its compiler and sysroot:
   go to `work/stage/`, where later packages find them; the rest, without
   documentation, becomes the archive.
 - Everything is linked statically: there is no dynamic loader yet. That
-  is why coreutils is built as one program with a symlink per utility.
+  is why coreutils is built as one program with a symlink per utility,
+  and why every program that uses OpenSSL is 5 MB or more (curl 7.5,
+  ssh 5.6, openssl 8.3): each carries its own copy. openssh's server and
+  helpers are left out for that reason.
+- A source can be a single file instead of an archive (ca-certificates).
 
 ## Writing a recipe
 
