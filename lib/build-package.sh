@@ -49,7 +49,12 @@ configure_host() {
 if [ ! -f "$SRC/.unpacked" ]; then
 	rm -rf "$SRC"
 	mkdir -p "$SRC"
-	tar -xf "$archive" -C "$SRC" --strip-components=1
+	# An archive is unpacked; a source that is a single file (a
+	# certificate bundle) is just put there.
+	case "$archive" in
+	*.tar.*|*.tgz) tar -xf "$archive" -C "$SRC" --strip-components=1 ;;
+	*) cp "$archive" "$SRC/" ;;
+	esac
 	for patch in /ports/packages/"$name"/patches/*.patch; do
 		[ -f "$patch" ] || continue
 		echo "applying $(basename "$patch")"
@@ -75,7 +80,9 @@ done
 rm -rf "$DEST/usr/include" "$DEST/usr/share/man" "$DEST/usr/share/info" \
 	"$DEST/usr/share/doc" "$DEST/usr/lib/pkgconfig"
 find "$DEST" -name '*.a' -delete
-find "$DEST" -depth -type d -empty -delete
+# (A library that is only linked statically leaves nothing: its package
+# is empty, and exists so that every recipe has one.)
+find "$DEST" -mindepth 1 -depth -type d -empty -delete
 
 tar -C "$DEST" --sort=name --owner=0 --group=0 --numeric-owner \
 	--mtime=@0 -czf "/pwork/out/$name-$VERSION.tar.gz" .
